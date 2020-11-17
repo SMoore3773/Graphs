@@ -117,6 +117,9 @@ class Graph:
         # call the helper function with the starting vertex and the set of visited vertecies
         dft_helper(starting_vertex, visited_verts)
 
+    # def dft_recursive_helper(self, curr_vertex):
+    #     visited = set()
+
     def bfs(self, starting_vertex, destination_vertex):
         """
         Return a list containing the shortest path from
@@ -172,10 +175,27 @@ class Graph:
         Return a list containing a path from
         starting_vertex to destination_vertex in
         depth-first order.
-
         This should be done using recursion.
         """
-        pass
+        visited = set()
+        return self.dfs_recursive_helper([starting_vertex], visited, destination_vertex)
+
+    def dfs_recursive_helper(self, curr_path, visited, destination_vertex):
+        curr_vertex = curr_path[-1]
+        if curr_vertex == destination_vertex:
+            return curr_path
+        visited.add(curr_vertex)
+
+        for neighbor in self.vertices[curr_vertex]:
+            if neighbor not in visited:
+                newPath = list(curr_path)
+                newPath.append(neighbor)
+                # recursive case - keep traversing the graph and visite the neighbor next
+                res = self.dfs_recursive_helper(newPath, visited, destination_vertex)
+                if len(res) > 0:
+                    return res
+        # base case: return empty array if vertex not found
+        return []
 
 
 if __name__ == '__main__':
