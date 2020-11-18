@@ -1,6 +1,11 @@
+import random
+import math
+from collections import deque
+
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -42,11 +47,23 @@ class SocialGraph:
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
 
         # Add users
+        for user in range(num_users):
+            self.add_user(f"User {user}")
 
         # Create friendships
+        # generate all possible friendships between users and put them in a list
+        possible_friendships = []
+        for user_id in self.users:
+            for friend_id in range(user_id + 1, self.last_id + 1):
+                possible_friendships.append((user_id, friend_id))
+        # shuffle that list
+        random.shuffle(possible_friendships)
+        # create friendships using add_friendship from the first N elements in that list
+        for i in range(math.floor(num_users * avg_friendships / 2)):
+            friendship = possible_friendships[i]
+            self.add_friendship(friendship[0], friendship[1])
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,14 +74,43 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
+
+        """
+        The implementation of this is going to be similar to a BFS, but will traverse the whole graph
+        Instead of stopping when a certain index is found, it will continue over the whole thing
+        the visited 'set' is a dictionary that will use the index as the key and the path to the index as the value
+        a deque is used to act as a queue for BFT functionality
+        
+        Initially I thought to search the graph for all the connected nodes, and then find the paths to each,
+        however keeping track of the path to each connected node while traversing the graph will save operations and imporove run time
+        """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        queue = deque()
+
+        if user_id not in self.friendships:
+            print(f"user_id: {user_id} is not a friend")
+            return
+        queue.append(([user_id]))
+
+        while len(queue) > 0:
+            curr_path = queue.popleft()
+            curr_user = curr_path[-1]
+
+            if curr_user not in visited:
+                visited[curr_user] = curr_path
+                for friend in self.friendships[curr_user]:
+                    new_path = list(curr_path)
+                    new_path.append(friend)
+                    queue.append((new_path))
+
         return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
-    print(sg.friendships)
-    connections = sg.get_all_social_paths(1)
+    # print(sg.friendships)
+    connections = sg.get_all_social_paths(11)
     print(connections)
+    # print(len(connections))

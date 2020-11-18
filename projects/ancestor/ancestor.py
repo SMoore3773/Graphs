@@ -48,7 +48,7 @@ def earliest_ancestor(ancestors, starting_node):
             for ancestor in graph[currNode]:
                 if ancestor not in visited:
                     stack.append((ancestor, distance + 1))
-    return earliest_ancestor[0] if earliest_ancestor != starting_node else -1
+    return earliest_ancestor[0] if earliest_ancestor[0] != starting_node else -1
 
 
 def createGraph(edges):
